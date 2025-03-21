@@ -1,0 +1,399 @@
+swagger: "2.0"
+info:
+  title: 获取Pull Request列表 API - Gitee Open API (提取)
+  version: 5.4.86
+  description: |
+    此文档仅包含 "获取Pull Request列表" API，
+    提取自完整的 Gitee Open API Swagger 文档。
+host: gitee.com
+basePath: /api
+schemes:
+- https
+- http
+produces:
+- application/json
+consumes:
+- application/json
+tags:
+- name: Pull Requests
+  description: Operations about Pull Requests
+paths:
+  /v5/repos/{owner}/{repo}/pulls:
+    get:
+      summary: 获取Pull Request列表
+      description: 获取Pull Request列表
+      produces:
+        - application/json
+      parameters:
+      - in: query
+        name: access_token
+        description: 用户授权码
+        type: string
+        required: false
+      - in: path
+        name: owner
+        description: 仓库所属空间地址(企业、组织或个人的地址path)
+        type: string
+        required: true
+      - in: path
+        name: repo
+        description: 仓库路径(path)
+        type: string
+        required: true
+      - in: query
+        name: state
+        description: 可选。Pull Request 状态
+        type: string
+        default: open
+        enum:
+        - open
+        - closed
+        - merged
+        - all
+        required: false
+      - in: query
+        name: head
+        description: 可选。Pull Request 提交的源分支。格式：branch 或者：username:branch
+        type: string
+        required: false
+      - in: query
+        name: base
+        description: 可选。Pull Request 提交目标分支的名称。
+        type: string
+        required: false
+      - in: query
+        name: sort
+        description: 可选。排序字段，默认按创建时间
+        type: string
+        default: created
+        enum:
+        - created
+        - updated
+        - popularity
+        - long-running
+        required: false
+      - in: query
+        name: since
+        description: 可选。起始的更新时间，要求时间格式为 ISO 8601
+        type: string
+        required: false
+      - in: query
+        name: direction
+        description: 可选。升序/降序
+        type: string
+        default: desc
+        enum:
+        - asc
+        - desc
+        required: false
+      - in: query
+        name: milestone_number
+        description: 可选。里程碑序号(id)
+        type: integer
+        format: int32
+        required: false
+      - in: query
+        name: labels
+        description: "用逗号分开的标签。如: bug,performance"
+        type: string
+        required: false
+      - in: query
+        name: page
+        description: 当前的页码
+        type: integer
+        format: int32
+        default: 1
+        required: false
+      - in: query
+        name: per_page
+        description: 每页的数量，最大为 100
+        type: integer
+        format: int32
+        default: 20
+        minimum: 1
+        maximum: 100
+        required: false
+      - in: query
+        name: author
+        description: 可选。PR 创建者用户名
+        type: string
+        required: false
+      - in: query
+        name: assignee
+        description: 可选。评审者用户名
+        type: string
+        required: false
+      - in: query
+        name: tester
+        description: 可选。测试者用户名
+        type: string
+        required: false
+      responses:
+        "200":
+          description: 返回格式
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/PullRequest"
+      tags:
+      - Pull Requests
+      operationId: getV5ReposOwnerRepoPulls
+definitions:
+  PullRequest:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      url:
+        type: string
+      html_url:
+        type: string
+      diff_url:
+        type: string
+      patch_url:
+        type: string
+      issue_url:
+        type: string
+      commits_url:
+        type: string
+      review_comments_url:
+        type: string
+      review_comment_url:
+        type: string
+      comments_url:
+        type: string
+      number:
+        type: integer
+        format: int32
+      close_related_issue:
+        type: integer
+        format: int32
+      prune_branch:
+        type: boolean
+      state:
+        type: string
+      assignees_number:
+        type: integer
+        format: int32
+      testers_number:
+        type: integer
+        format: int32
+      assignees:
+        type: array
+        items:
+          $ref: '#/definitions/UserAssignee'
+      testers:
+        type: array
+        items:
+          $ref: '#/definitions/UserAssignee'
+      api_reviewers_number:
+        type: integer
+        format: int32
+      api_reviewers:
+        type: array
+        items:
+          $ref: '#/definitions/UserAssignee'
+      milestone:
+        $ref: '#/definitions/Milestone'
+      labels:
+        type: array
+        items:
+          $ref: '#/definitions/Label'
+      locked:
+        type: boolean
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      closed_at:
+        type: string
+        format: date-time
+      draft:
+        type: boolean
+      merged_at:
+        type: string
+        format: date-time
+      mergeable:
+        type: boolean
+      can_merge_check:
+        type: boolean
+      _links:
+        type: string
+      user:
+        $ref: '#/definitions/UserBasic'
+      ref_pull_requests:
+        type: array
+        items:
+          $ref: '#/definitions/RefPullRequest'
+      title:
+        type: string
+      body:
+        type: string
+      body_html:
+        type: string
+      head:
+        type: string
+      base:
+        type: string
+    description: 企业 Pull Request 列表
+  UserAssignee:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      login:
+        type: string
+      name:
+        type: string
+      avatar_url:
+        type: string
+      url:
+        type: string
+      html_url:
+        type: string
+      remark:
+        type: string
+        description: 企业备注名
+      followers_url:
+        type: string
+      following_url:
+        type: string
+      gists_url:
+        type: string
+      starred_url:
+        type: string
+      subscriptions_url:
+        type: string
+      organizations_url:
+        type: string
+      repos_url:
+        type: string
+      events_url:
+        type: string
+      received_events_url:
+        type: string
+      type:
+        type: string
+      member_role:
+        type: string
+      assignee:
+        type: boolean
+        description: 是否默认指派审查
+      code_owner:
+        type: boolean
+        description: 是否CodeOwner指派审查
+      accept:
+        type: boolean
+        description: 是否审查通过
+  UserBasic:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      login:
+        type: string
+      name:
+        type: string
+      avatar_url:
+        type: string
+      url:
+        type: string
+      html_url:
+        type: string
+      remark:
+        type: string
+        description: 企业备注名
+      followers_url:
+        type: string
+      following_url:
+        type: string
+      gists_url:
+        type: string
+      starred_url:
+        type: string
+      subscriptions_url:
+        type: string
+      organizations_url:
+        type: string
+      repos_url:
+        type: string
+      events_url:
+        type: string
+      received_events_url:
+        type: string
+      type:
+        type: string
+      member_role:
+        type: string
+    description: 列出一个组织的所有成员
+  Milestone:
+    type: object
+    properties:
+      url:
+        type: string
+      html_url:
+        type: string
+      number:
+        type: integer
+        format: int32
+      repository_id:
+        type: integer
+        format: int32
+      state:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+      updated_at:
+        type: string
+        format: date-time
+      created_at:
+        type: string
+        format: date-time
+      open_issues:
+        type: integer
+        format: int32
+      closed_issues:
+        type: integer
+        format: int32
+      due_on:
+        type: string
+        format: date
+    description: 更新仓库里程碑
+  Label:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      color:
+        type: string
+      name:
+        type: string
+      repository_id:
+        type: integer
+        format: int32
+      url:
+        type: string
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    description: 获取企业某个标签
+  RefPullRequest:
+    type: object
+    properties:
+      number:
+        type: string
+      title:
+        type: string
+      state:
+        type: string

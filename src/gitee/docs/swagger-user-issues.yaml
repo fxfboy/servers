@@ -1,0 +1,487 @@
+
+swagger: "2.0"
+info:
+  title: 获取授权用户的所有Issues API - Gitee Open API (提取)
+  version: 5.4.86
+  description: |
+    此文档仅包含 "获取授权用户的所有Issues" API，
+    提取自完整的 Gitee Open API Swagger 文档。
+host: gitee.com
+basePath: /api
+schemes:
+- https
+- http
+produces:
+- application/json
+consumes:
+- application/json
+tags:
+- name: Issues
+  description: Operations about Issues
+paths:
+  /v5/user/issues:
+    get:
+      summary: 获取授权用户的所有Issues
+      description: 获取授权用户的所有Issues
+      produces:
+        - application/json
+      parameters:
+      - in: query
+        name: access_token
+        description: 用户授权码
+        type: string
+        required: false
+      - in: query
+        name: filter
+        description: "筛选参数: 授权用户负责的(assigned)，授权用户创建的(created)，包含前两者的(all)。默认: assigned"
+        type: string
+        default: assigned
+        enum:
+        - assigned
+        - created
+        - all
+        required: false
+      - in: query
+        name: state
+        description: "Issue的状态: open（开启的）, progressing(进行中), closed（关闭的）, rejected（拒绝的）。\n默认: open"
+        type: string
+        default: open
+        enum:
+        - open
+        - progressing
+        - closed
+        - rejected
+        - all
+        required: false
+      - in: query
+        name: labels
+        description: "用逗号分开的标签。如: bug,performance"
+        type: string
+        required: false
+      - in: query
+        name: sort
+        description: "排序依据: 创建时间(created)，更新时间(updated_at)。默认: created_at"
+        type: string
+        default: created
+        enum:
+        - created
+        - updated
+        required: false
+      - in: query
+        name: direction
+        description: "排序方式: 升序(asc)，降序(desc)。默认: desc"
+        type: string
+        default: desc
+        enum:
+        - asc
+        - desc
+        required: false
+      - in: query
+        name: since
+        description: 起始的更新时间，要求时间格式为 ISO 8601
+        type: string
+        required: false
+      - in: query
+        name: page
+        description: 当前的页码
+        type: integer
+        format: int32
+        default: 1
+        required: false
+      - in: query
+        name: per_page
+        description: 每页的数量，最大为 100
+        type: integer
+        format: int32
+        default: 20
+        minimum: 1
+        maximum: 100
+        required: false
+      - in: query
+        name: schedule
+        description: |-
+          计划开始日期，格式：20181006T173008+80-20181007T173008+80（区间），或者
+          -20181007T173008+80（小于20181007T173008+80），或者
+          20181006T173008+80-（大于20181006T173008+80），要求时间格式为20181006T173008+80
+        type: string
+        required: false
+      - in: query
+        name: deadline
+        description: 计划截止日期，格式同上
+        type: string
+        required: false
+      - in: query
+        name: created_at
+        description: 任务创建时间，格式同上
+        type: string
+        required: false
+      - in: query
+        name: finished_at
+        description: 任务完成时间，即任务最后一次转为已完成状态的时间点。格式同上
+        type: string
+        required: false
+      responses:
+        "200":
+          description: 返回格式
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Issue"
+      tags:
+      - Issues
+      operationId: getV5UserIssues
+definitions:
+  Issue:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      url:
+        type: string
+      repository_url:
+        type: string
+      labels_url:
+        type: string
+      comments_url:
+        type: string
+      html_url:
+        type: string
+      parent_url:
+        type: string
+      number:
+        type: string
+        description: 唯一标识
+      parent_id:
+        type: integer
+        format: int32
+        description: 上级 id
+      depth:
+        type: integer
+        format: int32
+        description: 所在层级
+      state:
+        type: string
+        description: 状态
+      title:
+        type: string
+        description: 标题
+      body:
+        type: string
+        description: 描述
+      body_html:
+        type: string
+        description: 描述 html 格式
+      user:
+        $ref: "#/definitions/UserBasic"
+        description: 作者
+      labels:
+        type: array
+        items:
+          $ref: "#/definitions/Label"
+        description: 标签
+      assignee:
+        $ref: "#/definitions/UserBasic"
+        description: 负责人
+      collaborators:
+        type: array
+        items:
+          $ref: "#/definitions/UserBasic"
+        description: 协作者
+      repository:
+        $ref: "#/definitions/ProjectBasic"
+        description: 关联的仓库
+      milestone:
+        $ref: "#/definitions/Milestone"
+        description: 关联的里程碑
+      created_at:
+        type: string
+        format: date-time
+        description: 创建时间
+      updated_at:
+        type: string
+        format: date-time
+        description: 更新时间
+      plan_started_at:
+        type: string
+        format: date-time
+        description: 计划开始时间
+      deadline:
+        type: string
+        format: date-time
+        description: 结束时间
+      finished_at:
+        type: string
+        format: date-time
+        description: 完成时间
+      scheduled_time:
+        type: integer
+        format: int32
+        description: 预计工期
+      comments:
+        type: integer
+        format: int32
+        description: 评论数量
+      priority:
+        type: integer
+        format: int32
+        description: '优先级(0: 不指定 1: 不重要 2: 次要 3: 主要 4: 严重)'
+      issue_type_detail:
+        $ref: "#/definitions/IssueType"
+        description: 任务类型详情
+      program:
+        $ref: "#/definitions/ProgramBasic"
+        description: 关联的项目
+      security_hole:
+        type: boolean
+        description: 是否为私有issue
+      issue_state_detail:
+        $ref: "#/definitions/IssueState"
+        description: 任务类型详情
+      branch:
+        type: string
+        description: 关联分支
+    description: 搜索 Issues
+  UserBasic:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      login:
+        type: string
+      name:
+        type: string
+      avatar_url:
+        type: string
+      url:
+        type: string
+      html_url:
+        type: string
+      remark:
+        type: string
+        description: 企业备注名
+      followers_url:
+        type: string
+      following_url:
+        type: string
+      gists_url:
+        type: string
+      starred_url:
+        type: string
+      subscriptions_url:
+        type: string
+      organizations_url:
+        type: string
+      repos_url:
+        type: string
+      events_url:
+        type: string
+      received_events_url:
+        type: string
+      type:
+        type: string
+      member_role:
+        type: string
+    description: 列出一个组织的所有成员
+  Label:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      color:
+        type: string
+      name:
+        type: string
+      repository_id:
+        type: integer
+        format: int32
+      url:
+        type: string
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    description: 获取企业某个标签
+  Milestone:
+    type: object
+    properties:
+      url:
+        type: string
+      html_url:
+        type: string
+      number:
+        type: integer
+        format: int32
+      repository_id:
+        type: integer
+        format: int32
+      state:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+      updated_at:
+        type: string
+        format: date-time
+      created_at:
+        type: string
+        format: date-time
+      open_issues:
+        type: integer
+        format: int32
+      closed_issues:
+        type: integer
+        format: int32
+      due_on:
+        type: string
+        format: date
+    description: 更新仓库里程碑
+  IssueType:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+        description: 任务类型 ID
+      title:
+        type: string
+        description: 任务类型的名称
+      template:
+        type: string
+        description: 任务类型模板
+      ident:
+        type: string
+        description: 唯一标识符
+      color:
+        type: string
+        description: 颜色
+      is_system:
+        type: boolean
+        description: 是否系统默认类型
+      created_at:
+        type: string
+        format: date-time
+        description: 任务类型创建时间
+      updated_at:
+        type: string
+        format: date-time
+        description: 任务类型更新时间
+  ProgramBasic:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+        description: 项目id
+      name:
+        type: string
+        description: 项目名称
+      description:
+        type: string
+        description: 项目描述
+      assignee:
+        $ref: "#/definitions/UserBasic"
+        description: 项目负责人
+      author:
+        $ref: "#/definitions/UserBasic"
+        description: 项目创建者
+  IssueState:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+        description: 任务状态 ID
+      title:
+        type: string
+        description: 任务状态的名称
+      color:
+        type: string
+        description: 任务状态的颜色
+      icon:
+        type: string
+        description: 任务状态的 Icon
+      command:
+        type: string
+        description: 任务状态的 指令
+      serial:
+        type: integer
+        format: int32
+        description: 任务状态的 排序
+      created_at:
+        type: string
+        format: date-time
+        description: 任务状态创建时间
+      updated_at:
+        type: string
+        format: date-time
+        description: 任务状态更新时间
+  ProjectBasic:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      full_name:
+        type: string
+      human_name:
+        type: string
+      url:
+        type: string
+      namespace:
+        $ref: "#/definitions/NamespaceMini"
+      path:
+        type: string
+        description: 仓库路径
+      name:
+        type: string
+        description: 仓库名称
+      owner:
+        $ref: "#/definitions/UserBasic"
+        description: 仓库拥有者
+      assigner:
+        $ref: "#/definitions/UserBasic"
+        description: 仓库负责人
+      description:
+        type: string
+        description: 仓库描述
+      private:
+        type: boolean
+        description: 是否私有
+      public:
+        type: boolean
+        description: 是否公开
+      internal:
+        type: boolean
+        description: 是否内部开源
+      fork:
+        type: boolean
+        description: 是否是fork仓库
+      html_url:
+        type: string
+      ssh_url:
+        type: string
+  NamespaceMini:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+        description: namespace id
+      type:
+        type: string
+        description: namespace 类型，企业：Enterprise，组织：Group，用户：null
+      name:
+        type: string
+        description: namespace 名称
+      path:
+        type: string
+        description: namespace 路径
+      html_url:
+        type: string
+        description: namespace 地址
