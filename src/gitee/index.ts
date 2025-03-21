@@ -9,6 +9,7 @@ import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 
 import { ListPullRequestsSchema, listPullRequests } from './operations/pulls.js';
+import { ListIssuesSchema, listIssues } from './operations/issues.js';
 import { isGiteeError } from './common/errors.js';
 
 const server = new Server(
@@ -32,6 +33,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         description: "获取 Pull Request 列表",
         inputSchema: zodToJsonSchema(ListPullRequestsSchema),
       },
+      {
+        name: "list_issues",
+        description: "获取 Issue 列表",
+        inputSchema: zodToJsonSchema(ListIssuesSchema),
+      },
     ],
   };
 });
@@ -48,6 +54,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const args = ListPullRequestsSchema.parse(request.params.arguments);
         const { owner, repo, ...options } = args;
         const result = await listPullRequests(owner, repo, options);
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
+      
+      case "list_issues": {
+        const args = ListIssuesSchema.parse(request.params.arguments);
+        const result = await listIssues(args);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
